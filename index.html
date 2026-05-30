@@ -914,7 +914,7 @@
                     <i class="fa-solid fa-bullhorn text-cyan-400"></i>
                 </div>
                 <div>
-                    <h3 class="font-extrabold text-sm text-slate-100 tracking-wider uppercase font-mono">Список изменений: Версия <span id="changelogVersionText">4.1.0</span></h3>
+                    <h3 class="font-extrabold text-sm text-slate-100 tracking-wider uppercase font-mono">Список изменений: Версия <span id="changelogVersionText">4.1.1</span></h3>
                     <p class="text-[10px] text-slate-400 font-mono">История обновлений и исправлений</p>
                 </div>
             </div>
@@ -933,10 +933,14 @@
                             <strong class="text-slate-100">Правило 4 и 5 звезд (No Bail):</strong> Согласно правилам Majestic, залог автоматически блокируется при уровне розыска от 4 звезд включительно.
                         </li>
                         <li>
-                            <strong class="text-slate-100">Отдел HRT:</strong> Возвращено каноничное название спецподразделения взамен устаревшего ATF.
+                            <strong class="text-slate-100">Обучение и список обновлений:</strong> Добавлено интерактивное обучение и добавлен список изменений.
                         </li>
                         <li>
                             <strong class="text-slate-100">Ремонт справочника:</strong> Устранена критическая ошибка верстки, из-за которой скрывались вкладки 3-7, таймеры и интерактивная проверка легитимности задержания.
+                        </li>
+
+                        <li>
+                            <strong class="text-slate-100">Исправление ошибок и оптимизация:</strong> Проведена оптимизация кода, исправлены мелкие баги и улучшена производительность.
                         </li>
                     </ul>
                 </div>
@@ -1001,7 +1005,7 @@
         <span>FIB DEPT</span>
         <div class="flex gap-4 items-center">
             <button onclick="openChangelog()" class="text-cyan-500/70 hover:text-cyan-400 hover:underline transition flex items-center gap-1">
-                <i class="fa-solid fa-circle-info"></i> Что нового (v4.1.0)
+                <i class="fa-solid fa-circle-info"></i> Что нового (v<span id="footerVersionText">4.1.1</span>)
             </button>
             <span class="opacity-50">|</span>
             <span>Разработчик: <strong class="text-slate-400 select-all hover:text-cyan-400 transition">washapso</strong></span>
@@ -1230,7 +1234,7 @@
 
         // Идентификатор текущей версии приложения. 
         // Меняйте это число при выпуске новой версии, чтобы окно открылось снова!
-        const APP_VERSION = "4.1.0";
+        const APP_VERSION = "4.1.1";
 
         // Parsing raw text into JSON structures
         function parseAllData() {
@@ -2273,6 +2277,10 @@
 
         // Init
         window.addEventListener('DOMContentLoaded', () => {
+            // Динамическое обновление версии
+            document.getElementById('changelogVersionText').textContent = APP_VERSION;
+            document.getElementById('footerVersionText').textContent = APP_VERSION;
+
             parseAllData();
             renderQuickFilterChips();
             loadNotepad();
