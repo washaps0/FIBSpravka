@@ -67,6 +67,17 @@
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* ИНТЕРАКТИВНЫЙ ТУР */
+        .tour-highlight {
+            position: relative !important;
+            z-index: 101 !important;
+            box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.6), 0 0 30px rgba(6, 182, 212, 0.4) !important;
+            background-color: #0f172a !important; /* slate-900 */
+            border-radius: 0.75rem !important;
+            transition: all 0.3s ease;
+            pointer-events: none !important; /* Блокируем клики во время тура */
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col overflow-x-hidden selection:bg-blue-600 selection:text-white">
@@ -94,7 +105,7 @@
             <!-- Header Controls -->
             <div class="flex items-center gap-3 flex-wrap text-sm font-mono">
                 <!-- Handbook Trigger Button -->
-                <button onclick="openHandbook()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 px-3.5 py-2 rounded-lg font-bold transition duration-200 flex items-center gap-2 text-xs shadow-md animate-pulse-cyan">
+                <button id="handbookBtn" onclick="openHandbook()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 px-3.5 py-2 rounded-lg font-bold transition duration-200 flex items-center gap-2 text-xs shadow-md animate-pulse-cyan">
                     <i class="fa-solid fa-book-bookmark"></i> СПРАВОЧНИК FIB
                 </button>
                 <!-- Clock -->
@@ -117,7 +128,7 @@
         <section class="lg:col-span-5 flex flex-col gap-4">
             
             <!-- Code Selector Tabs -->
-            <div class="bg-slate-950 p-1.5 rounded-xl border border-slate-850 grid grid-cols-6 gap-1">
+            <div id="codeTabsContainer" class="bg-slate-950 p-1.5 rounded-xl border border-slate-850 grid grid-cols-6 gap-1">
                 <button id="tabALL" onclick="switchCode('ALL')" class="py-2.5 px-1 rounded-lg text-[11px] font-semibold text-slate-400 hover:text-white transition duration-200 text-center">
                     ВСЕ
                 </button>
@@ -139,8 +150,8 @@
                 </button>
             </div>
 
-            <!-- Search Field -->
-            <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 flex flex-col gap-3">
+            <!-- Search Field & Quick Filters -->
+            <div id="searchContainer" class="bg-slate-950 p-4 rounded-xl border border-slate-850 flex flex-col gap-3">
                 <div class="relative">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <i class="fa-solid fa-magnifying-glass text-slate-500"></i>
@@ -155,7 +166,7 @@
             </div>
 
             <!-- Articles database rendering list -->
-            <div class="bg-slate-950 rounded-xl border border-slate-850 flex flex-col flex-grow min-h-[420px] lg:max-h-[520px] overflow-hidden">
+            <div id="articlesContainerWrapper" class="bg-slate-950 rounded-xl border border-slate-850 flex flex-col flex-grow min-h-[420px] lg:max-h-[520px] overflow-hidden">
                 <div class="px-4 py-3 bg-slate-900/60 border-b border-slate-850 flex justify-between items-center">
                     <span id="currentDatabaseTitle" class="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">Уголовный Кодекс</span>
                     <span id="listCount" class="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono">0 статей</span>
@@ -171,7 +182,7 @@
         <section class="lg:col-span-7 flex flex-col gap-4">
 
             <!-- Procedural Timer -->
-            <div class="bg-slate-950 rounded-xl border border-slate-850 p-4 shadow-sm relative overflow-hidden">
+            <div id="timersContainer" class="bg-slate-950 rounded-xl border border-slate-850 p-4 shadow-sm relative overflow-hidden">
                 <div class="flex justify-between items-center mb-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-stopwatch text-cyan-400"></i>
@@ -451,7 +462,7 @@
                             <span class="bg-amber-700 text-amber-100 font-bold font-mono px-2 py-0.5 rounded text-[10px] w-12 text-center mt-0.5">S</span>
                             <div>
                                 <strong class="text-amber-400 block">Secret (Секретно)</strong>
-                                Личные данные (имена/фамилии) и внешность всех оперативных сотрудников **CID и ATF** FIB относятся к этому уровню. Агент обязан скрывать личность маской, представляясь только жетоном/нашивкой и заявляя о причастности к гостайне.
+                                Личные данные (имена/фамилии) и внешность всех оперативных сотрудников CID и HRT FIB относятся к этому уровню. Агент обязан скрывать личность маской, представляясь только жетоном/нашивкой и заявляя о причастности к гостайне.
                             </div>
                         </div>
 
@@ -459,7 +470,7 @@
                             <span class="bg-blue-800 text-blue-100 font-bold font-mono px-2 py-0.5 rounded text-[10px] w-12 text-center mt-0.5">C</span>
                             <div>
                                 <strong class="text-blue-400 block">Confidential (Конфиденциально)</strong>
-                                Материалы активных кейс-файлов CID, тактические схемы спецопераций ATF и внутренние расследования IB.
+                                Материалы активных кейс-файлов CID, тактические схемы спецопераций HRT и внутренние расследования IB.
                             </div>
                         </div>
 
@@ -500,7 +511,7 @@
                     </div>
                     <div>
                         <h2 class="font-extrabold text-base text-slate-100 tracking-wider uppercase">СПРАВОЧНИК FIB</h2>
-                        <p class="text-[10px] text-slate-400 font-mono">Свод законов, регламентов, инструкций CID, ATF, IB и ПК</p>
+                        <p class="text-[10px] text-slate-400 font-mono">Свод законов, регламентов, инструкций CID, HRT, IB и ПК</p>
                     </div>
                 </div>
                 <button onclick="closeHandbook()" class="text-slate-400 hover:text-white transition text-lg p-1.5 hover:bg-slate-800 rounded">
@@ -888,12 +899,112 @@
         </div>
     </div>
 
+    <!-- ========================================================= -->
+    <!--     СЕКЦИЯ: ОКНО ОБНОВЛЕНИЙ И АВТОРСТВА (ОДНОРАЗОВОЕ)      -->
+    <!-- ========================================================= -->
+    <div id="changelogModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 flex flex-col gap-4 glow-cyan transition-transform duration-300 scale-95 relative overflow-hidden">
+            
+            <!-- Декоративная линия сверху -->
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-cyan-500 to-indigo-500"></div>
+
+            <!-- Заголовок -->
+            <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                <div class="h-9 w-9 bg-cyan-500/10 rounded-lg flex items-center justify-center border border-cyan-500/30">
+                    <i class="fa-solid fa-bullhorn text-cyan-400"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-sm text-slate-100 tracking-wider uppercase font-mono">Список изменений: Версия <span id="changelogVersionText">4.1.0</span></h3>
+                    <p class="text-[10px] text-slate-400 font-mono">История обновлений и исправлений</p>
+                </div>
+            </div>
+
+            <!-- Список обновлений -->
+            <div class="space-y-3.5 my-2 max-h-[250px] overflow-y-auto pr-1">
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-cyan-300 flex items-center gap-1.5 font-mono">
+                        <i class="fa-solid fa-square-poll-horizontal text-[10px]"></i> ЧТО СДЕЛАНО В ЭТОМ ПАТЧЕ:
+                    </h4>
+                    <ul class="text-xs text-slate-300 space-y-2 pl-4 list-disc leading-relaxed">
+                        <li>
+                            <strong class="text-slate-100">Калибровка залога:</strong> Введен жесткий лимит залога в <span class="text-emerald-400 font-bold">$125,000</span> за любые преступления.
+                        </li>
+                        <li>
+                            <strong class="text-slate-100">Правило 4 и 5 звезд (No Bail):</strong> Согласно правилам Majestic, залог автоматически блокируется при уровне розыска от 4 звезд включительно.
+                        </li>
+                        <li>
+                            <strong class="text-slate-100">Отдел HRT:</strong> Возвращено каноничное название спецподразделения взамен устаревшего ATF.
+                        </li>
+                        <li>
+                            <strong class="text-slate-100">Ремонт справочника:</strong> Устранена критическая ошибка верстки, из-за которой скрывались вкладки 3-7, таймеры и интерактивная проверка легитимности задержания.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Информационный блок обратной связи (Авторство) -->
+            <div class="bg-blue-950/20 border border-blue-900/40 rounded-xl p-3.5 flex items-start gap-3">
+                <div class="text-blue-400 text-lg mt-0.5">
+                    <i class="fa-brands fa-discord"></i>
+                </div>
+                <div class="text-[11px] leading-relaxed text-slate-300 font-mono">
+                    <strong class="text-slate-100 block mb-0.5">НАШЛИ ОШИБКУ ИЛИ БАГ?</strong>
+                    Я разрабатываю этот сайт в одиночку, поэтому буду очень благодарен за любую обратную связь. Напишите мне в Discord: <span class="text-cyan-400 font-bold select-all bg-slate-950/80 px-1.5 py-0.5 rounded border border-slate-800">washapso</span>.
+                </div>
+            </div>
+
+            <!-- Кнопка подтверждения -->
+            <div class="flex justify-end pt-2">
+                <button onclick="closeChangelog(true)" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 text-xs font-extrabold py-2.5 rounded-lg transition duration-200 shadow-md uppercase tracking-wider font-mono">
+                    Понятно
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!--     СЕКЦИЯ: ИНТЕРАКТИВНОЕ ОБУЧЕНИЕ (GUIDED TOUR)          -->
+    <!-- ========================================================= -->
+    
+    <!-- Затемнение фона -->
+    <div id="tourOverlay" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-[100] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center justify-center"></div>
+
+    <!-- Всплывающая подсказка -->
+    <div id="tourTooltip" class="fixed z-[102] w-[340px] bg-slate-900 border-2 border-cyan-500 rounded-xl p-5 shadow-[0_0_40px_rgba(6,182,212,0.3)] transition-all duration-300 opacity-0 pointer-events-none flex flex-col gap-3">
+        <div class="flex items-start gap-3 border-b border-slate-800 pb-3">
+            <div id="tourIcon" class="h-10 w-10 bg-cyan-500/20 rounded-lg flex items-center justify-center shrink-0 border border-cyan-500/50">
+                <i class="fa-solid fa-graduation-cap text-cyan-400 text-xl"></i>
+            </div>
+            <div>
+                <h3 id="tourTitle" class="font-extrabold text-sm text-slate-100 tracking-wider uppercase font-mono">Название шага</h3>
+                <p id="tourStepCounterLabel" class="text-[10px] text-slate-400 font-mono mt-0.5">Шаг 1 из 6</p>
+            </div>
+        </div>
+        
+        <div id="tourContent" class="text-xs text-slate-300 leading-relaxed py-1 min-h-[60px]">
+            Описание текущего шага и функций элемента.
+        </div>
+
+        <div class="flex justify-between items-center pt-2">
+            <button onclick="endTour()" class="text-[10px] text-slate-500 hover:text-rose-400 transition font-mono uppercase font-bold tracking-wider">
+                Завершить
+            </button>
+            <div class="flex gap-2">
+                <button id="tourPrevBtn" onclick="prevTourStep()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold px-3 py-2 rounded transition uppercase tracking-wider">Назад</button>
+                <button id="tourNextBtn" onclick="nextTourStep()" class="bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold px-4 py-2 rounded transition uppercase tracking-wider shadow-md">Далее</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Hotkey Info Footer -->
     <footer class="bg-slate-950 border-t border-slate-900 py-3 px-6 text-center text-[10px] text-slate-500 font-mono mt-auto flex justify-between items-center">
         <span>FIB DEPT</span>
-        <div class="flex gap-4 opacity-70">
-            <span>Version 4.0 (FIB Edition)</span>
+        <div class="flex gap-4 items-center">
+            <button onclick="openChangelog()" class="text-cyan-500/70 hover:text-cyan-400 hover:underline transition flex items-center gap-1">
+                <i class="fa-solid fa-circle-info"></i> Что нового (v4.1.0)
+            </button>
+            <span class="opacity-50">|</span>
+            <span>Разработчик: <strong class="text-slate-400 select-all hover:text-cyan-400 transition">washapso</strong></span>
         </div>
     </footer>
 
@@ -1102,6 +1213,10 @@
         let selectedArticles = [];
         let currentCodeType = "UK";
         let bolos = [];
+
+        // Идентификатор текущей версии приложения. 
+        // Меняйте это число при выпуске новой версии, чтобы окно открылось снова!
+        const APP_VERSION = "4.1.0";
 
         // Parsing raw text into JSON structures
         function parseAllData() {
@@ -1340,6 +1455,11 @@
                         </div>
                     `;
 
+                    // Согласно правилам Majestic RP, за статьи 4 и 5 приоритета розыска залог не ставится
+                    if (item.punishment >= 4) {
+                        bailPossible = false;
+                    }
+
                     if (item.superdes) {
                         specDirectives.push({ text: `Статья ${item.article} УК: <strong class="text-red-300 font-semibold">${item.superdes}</strong>` });
                         if (item.superdes.toLowerCase().includes('без права на залог')) bailPossible = false;
@@ -1378,24 +1498,33 @@
 
             let bailAmountEl = document.getElementById('bailAmountText');
             let bailLabelEl = document.getElementById('bailLabel');
+            
+            let finalStars = Math.min(totalStars, 5);
+            
+            // Если итоговый уровень розыска 4 или 5 звезд, то залог НЕ ставится
+            if (finalStars >= 4) {
+                bailPossible = false;
+            }
 
             if (totalStars > 0) {
                 document.getElementById('starsCountText').textContent = `${totalStars} ★`;
                 document.getElementById('starsLabel').textContent = totalStars > 5 ? "Макс. лимит (5 ★)" : "Уровень розыска";
                 
-                let renderStars = Math.min(totalStars, 5);
+                let renderStars = finalStars;
                 let starHtml = "";
                 for (let i = 0; i < renderStars; i++) starHtml += `<i class="fa-solid fa-star"></i>`;
                 document.getElementById('starsStarsContainer').innerHTML = starHtml;
 
                 if (bailPossible) {
-                    bailAmountEl.textContent = `$${(totalStars * 10000).toLocaleString()}`;
+                    // Расчет залога: $25,000 за звезду, но максимум $125,000
+                    let calculatedBail = Math.min(totalStars * 25000, 125000);
+                    bailAmountEl.textContent = `$${calculatedBail.toLocaleString()}`;
                     bailAmountEl.className = "text-base font-extrabold text-blue-400 mt-1";
                     bailLabelEl.textContent = "Доступен выход под залог";
                 } else {
                     bailAmountEl.textContent = "ОТКАЗ (NO BAIL)";
                     bailAmountEl.className = "text-base font-extrabold text-red-500 mt-1 drop-shadow-md";
-                    bailLabelEl.textContent = "Залог запрещен.";
+                    bailLabelEl.textContent = "Залог не ставится (4-5 ★ / Тяжкая)";
                     
                     calcCard.classList.remove('glow-cyan');
                     calcCard.classList.add('glow-red');
@@ -1470,14 +1599,14 @@
             }
         }
 
-        function startWaitTimer(minutes, label) {
+        function startWaitTimer(minutes, label, exactSeconds = null) {
             if (isMainTimerRunning) {
                 toggleMainTimer();
             }
             if (waitTimerInterval) clearInterval(waitTimerInterval);
             
-            waitTimeLeft = minutes * 60;
-            document.getElementById('waitTimerLabel').textContent = `Ожидание: ${label}`;
+            waitTimeLeft = exactSeconds !== null ? exactSeconds : minutes * 60;
+            document.getElementById('waitTimerLabel').textContent = label.includes('Ожидание') ? label : `Ожидание: ${label}`;
             document.getElementById('waitTimerDisplay').textContent = formatTime(waitTimeLeft);
             document.getElementById('waitTimerDisplay').classList.remove('text-red-500');
             document.getElementById('waitTimerDisplay').classList.add('text-cyan-400', 'animate-pulse');
@@ -1746,6 +1875,338 @@
             modal.querySelector('.bg-slate-900').classList.remove('scale-100');
         }
 
+        function openChangelog() {
+            const modal = document.getElementById('changelogModal');
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.classList.add('opacity-100');
+            modal.querySelector('.bg-slate-900').classList.remove('scale-95');
+            modal.querySelector('.bg-slate-900').classList.add('scale-100');
+        }
+
+        function closeChangelog(markAsRead = false) {
+            const modal = document.getElementById('changelogModal');
+            modal.classList.add('pointer-events-none', 'opacity-0');
+            modal.classList.remove('opacity-100');
+            modal.querySelector('.bg-slate-900').classList.add('scale-95');
+            modal.querySelector('.bg-slate-900').classList.remove('scale-100');
+
+            if (markAsRead) {
+                // Сохраняем информацию о том, что пользователь прочитал данную версию
+                localStorage.setItem('fib_viewed_version', APP_VERSION);
+                setTimeout(checkTutorial, 400);
+            }
+        }
+
+        function checkVersionAndShowModal() {
+            const viewedVersion = localStorage.getItem('fib_viewed_version');
+            // Если сохраненная версия в браузере не совпадает с текущей, показываем окно
+            if (viewedVersion !== APP_VERSION) {
+                setTimeout(() => {
+                    openChangelog();
+                }, 800); // Небольшая задержка для плавного появления после загрузки
+            }
+        }
+
+        // =========================================================
+        //     ИНТЕРАКТИВНЫЙ ТУР (GUIDED TOUR)
+        // =========================================================
+        
+        let currentTourStep = 0;
+        const tourSteps = [
+            {
+                target: 'handbookBtn',
+                title: 'Справочник FIB',
+                icon: 'fa-book-bookmark',
+                text: 'Ваш главный инструмент! Здесь находятся правила проведения допросов, регламенты задержания, стадии применения силы и калькулятор законности ваших действий.'
+            },
+            {
+                target: 'codeTabsContainer',
+                title: 'Категории законов',
+                icon: 'fa-layer-group',
+                text: 'Используйте эти вкладки для быстрого переключения между Уголовным Кодексом, КоАП, Дорожным и другими кодексами штата.'
+            },
+            {
+                target: 'searchContainer',
+                title: 'Умный поиск',
+                icon: 'fa-magnifying-glass',
+                text: 'Ищите статьи по точному номеру (например, <span class="text-cyan-400">12.8</span>) или по ключевым словам. Быстрые фильтры снизу помогут перейти к нужной главе в один клик.'
+            },
+            {
+                target: 'articlesContainerWrapper',
+                title: 'База статей',
+                icon: 'fa-list',
+                text: 'В этом списке отображаются найденные статьи. Чтобы добавить статью в дело нарушителя — <strong class="text-cyan-400">кликните по ней дважды</strong>.'
+            },
+            {
+                target: 'calculatorCard',
+                title: 'Активное досье',
+                icon: 'fa-calculator',
+                text: 'Система автоматически сложит все сроки, уровни розыска и штрафы. Калькулятор сам определит <strong class="text-emerald-400">сумму залога</strong> и заблокирует его, если уровень розыска достигнет 4 звезд.'
+            },
+            {
+                target: 'timersContainer',
+                title: 'Процессуальные таймеры',
+                icon: 'fa-stopwatch',
+                text: 'Контролируйте процессуальное время (60 мин) и время ожидания адвоката. Таймеры работают в фоне и не сбросятся, если вы случайно обновите страницу!'
+            }
+        ];
+
+        function startTour() {
+            currentTourStep = 0;
+            const overlay = document.getElementById('tourOverlay');
+            const tooltip = document.getElementById('tourTooltip');
+            
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+            
+            tooltip.classList.remove('opacity-0', 'pointer-events-none');
+            tooltip.classList.add('opacity-100', 'pointer-events-auto');
+            
+            // Отключаем скролл на body во время тура, чтобы не сбивалась позиция
+            document.body.style.overflow = 'hidden';
+            
+            renderTourStep();
+            
+            // Добавляем обработчики для обновления позиции при ресайзе
+            window.addEventListener('resize', updateTooltipPositionWrapper);
+        }
+
+        function endTour() {
+            const overlay = document.getElementById('tourOverlay');
+            const tooltip = document.getElementById('tourTooltip');
+            
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+            
+            tooltip.classList.add('opacity-0', 'pointer-events-none');
+            tooltip.classList.remove('opacity-100', 'pointer-events-auto');
+            
+            document.body.style.overflow = '';
+            window.removeEventListener('resize', updateTooltipPositionWrapper);
+            
+            // Убираем подсветку с текущего элемента
+            const currentStepData = tourSteps[currentTourStep];
+            if (currentStepData) {
+                const el = document.getElementById(currentStepData.target);
+                if (el) el.classList.remove('tour-highlight');
+            }
+            
+            localStorage.setItem('fib_tour_completed_v3', 'true');
+        }
+
+        function renderTourStep() {
+            // Очищаем подсветку у всех элементов на всякий случай
+            tourSteps.forEach(step => {
+                const el = document.getElementById(step.target);
+                if (el) el.classList.remove('tour-highlight');
+            });
+
+            const stepData = tourSteps[currentTourStep];
+            const targetEl = document.getElementById(stepData.target);
+
+            if (!targetEl) {
+                console.warn(`Target element ${stepData.target} not found`);
+                nextTourStep(); // Пропускаем сломанный шаг
+                return;
+            }
+
+            // Добавляем подсветку
+            targetEl.classList.add('tour-highlight');
+            
+            // Скроллим элемент в центр экрана
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Обновляем контент тултипа
+            document.getElementById('tourTitle').textContent = stepData.title;
+            document.getElementById('tourContent').innerHTML = stepData.text;
+            document.getElementById('tourStepCounterLabel').textContent = `Шаг ${currentTourStep + 1} из ${tourSteps.length}`;
+            document.getElementById('tourIcon').innerHTML = `<i class="fa-solid ${stepData.icon} text-cyan-400 text-xl"></i>`;
+
+            // Управление кнопками
+            const prevBtn = document.getElementById('tourPrevBtn');
+            const nextBtn = document.getElementById('tourNextBtn');
+
+            if (currentTourStep === 0) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+
+            if (currentTourStep === tourSteps.length - 1) {
+                nextBtn.textContent = "ЗАКОНЧИТЬ";
+                nextBtn.classList.replace('bg-cyan-600', 'bg-emerald-600');
+                nextBtn.classList.replace('hover:bg-cyan-500', 'hover:bg-emerald-500');
+            } else {
+                nextBtn.textContent = "ДАЛЕЕ";
+                nextBtn.classList.replace('bg-emerald-600', 'bg-cyan-600');
+                nextBtn.classList.replace('hover:bg-emerald-500', 'hover:bg-cyan-500');
+            }
+
+            // Ждем завершения скролла перед позиционированием
+            setTimeout(() => {
+                updateTooltipPosition(targetEl);
+            }, 300);
+        }
+
+        function updateTooltipPositionWrapper() {
+            const stepData = tourSteps[currentTourStep];
+            if (stepData) {
+                const targetEl = document.getElementById(stepData.target);
+                if (targetEl) updateTooltipPosition(targetEl);
+            }
+        }
+
+        function updateTooltipPosition(targetEl) {
+            const tooltip = document.getElementById('tourTooltip');
+            const targetRect = targetEl.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            
+            let top = 0;
+            let left = 0;
+            
+            const margin = 20;
+
+            // По умолчанию пытаемся поставить тултип справа от элемента
+            if (targetRect.right + tooltipRect.width + margin < window.innerWidth) {
+                left = targetRect.right + margin;
+                top = targetRect.top + (targetRect.height / 2) - (tooltipRect.height / 2);
+            } 
+            // Иначе пытаемся поставить слева
+            else if (targetRect.left - tooltipRect.width - margin > 0) {
+                left = targetRect.left - tooltipRect.width - margin;
+                top = targetRect.top + (targetRect.height / 2) - (tooltipRect.height / 2);
+            }
+            // Если по бокам нет места, ставим снизу
+            else if (targetRect.bottom + tooltipRect.height + margin < window.innerHeight) {
+                top = targetRect.bottom + margin;
+                left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
+            }
+            // Если снизу нет места, ставим сверху
+            else {
+                top = targetRect.top - tooltipRect.height - margin;
+                left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
+            }
+
+            // Корректировки, чтобы тултип не уезжал за пределы экрана
+            if (left < margin) left = margin;
+            if (left + tooltipRect.width > window.innerWidth - margin) left = window.innerWidth - tooltipRect.width - margin;
+            if (top < margin) top = margin;
+            if (top + tooltipRect.height > window.innerHeight - margin) top = window.innerHeight - tooltipRect.height - margin;
+
+            tooltip.style.transform = `translate(${left}px, ${top}px)`;
+            // Избегаем использования top/left напрямую для плавности анимации, так как transform лучше анимируется, 
+            // но нам нужно сбросить top/left в 0
+            tooltip.style.top = '0';
+            tooltip.style.left = '0';
+        }
+
+        function nextTourStep() {
+            if (currentTourStep < tourSteps.length - 1) {
+                currentTourStep++;
+                renderTourStep();
+            } else {
+                endTour();
+            }
+        }
+
+        function prevTourStep() {
+            if (currentTourStep > 0) {
+                currentTourStep--;
+                renderTourStep();
+            }
+        }
+
+        function checkTutorial() {
+            // Изменили ключ на v3, чтобы показать тур даже тем, кто уже видел старое модальное окно
+            if (!localStorage.getItem('fib_tour_completed_v3')) {
+                setTimeout(() => {
+                    startTour();
+                }, 800);
+            }
+        }
+
+        function saveAppState() {
+            const state = {
+                articles: selectedArticles,
+                codeType: currentCodeType,
+                forceLevel: document.querySelector('[id^="forceCard"].border-cyan-500\\/30') ? 
+                            document.querySelector('[id^="forceCard"].border-cyan-500\\/30').id.replace('forceCard', '') : 1,
+                timers: {
+                    main: {
+                        running: isMainTimerRunning,
+                        timeLeft: mainTimeLeft,
+                        endTime: isMainTimerRunning ? Date.now() + mainTimeLeft * 1000 : null
+                    },
+                    wait: {
+                        running: waitTimerInterval !== null,
+                        timeLeft: waitTimeLeft,
+                        endTime: waitTimerInterval !== null ? Date.now() + waitTimeLeft * 1000 : null,
+                        label: document.getElementById('waitTimerLabel').textContent
+                    },
+                    hb: {
+                        running: isHbTimerRunning,
+                        timeLeft: hbTimeLeft,
+                        endTime: isHbTimerRunning ? Date.now() + hbTimeLeft * 1000 : null
+                    }
+                }
+            };
+            localStorage.setItem('fib_app_state', JSON.stringify(state));
+        }
+
+        function loadAppState() {
+            const saved = localStorage.getItem('fib_app_state');
+            if (!saved) return false;
+            
+            try {
+                const state = JSON.parse(saved);
+                
+                if (state.articles && Array.isArray(state.articles)) {
+                    selectedArticles = state.articles;
+                    updateDossier();
+                }
+                
+                if (state.codeType) {
+                    switchCode(state.codeType);
+                }
+                
+                if (state.forceLevel) {
+                    selectForceLevel(parseInt(state.forceLevel));
+                }
+                
+                const now = Date.now();
+                if (state.timers) {
+                    if (state.timers.main.running && state.timers.main.endTime) {
+                        mainTimeLeft = Math.max(0, Math.floor((state.timers.main.endTime - now) / 1000));
+                        if (mainTimeLeft > 0) toggleMainTimer();
+                        else { mainTimeLeft = 0; document.getElementById('mainTimerDisplay').textContent = "00:00"; }
+                    } else if (state.timers.main.timeLeft !== undefined) {
+                        mainTimeLeft = state.timers.main.timeLeft;
+                        document.getElementById('mainTimerDisplay').textContent = formatTime(mainTimeLeft);
+                    }
+
+                    if (state.timers.wait.running && state.timers.wait.endTime) {
+                        waitTimeLeft = Math.max(0, Math.floor((state.timers.wait.endTime - now) / 1000));
+                        if (waitTimeLeft > 0) {
+                            startWaitTimer(0, state.timers.wait.label, waitTimeLeft);
+                        }
+                    }
+
+                    if (state.timers.hb.running && state.timers.hb.endTime) {
+                        hbTimeLeft = Math.max(0, Math.floor((state.timers.hb.endTime - now) / 1000));
+                        if (hbTimeLeft > 0) toggleTacticalTimer();
+                        else { hbTimeLeft = 0; document.getElementById('hbTimerDisplay').textContent = "00:00"; }
+                    } else if (state.timers.hb.timeLeft !== undefined) {
+                        hbTimeLeft = state.timers.hb.timeLeft;
+                        document.getElementById('hbTimerDisplay').textContent = formatTime(hbTimeLeft);
+                    }
+                }
+                return true;
+            } catch(e) {
+                console.error("Failed to load state", e);
+                return false;
+            }
+        }
+
         function switchHandbookTab(tabNumber) {
             for (let i = 1; i <= 7; i++) {
                 const tabBtn = document.getElementById(`hbTab${i}`);
@@ -1787,13 +2248,35 @@
         window.resetTacticalTimer = resetTacticalTimer;
         window.analyzeLegality = analyzeLegality;
         window.selectForceLevel = selectForceLevel;
+        window.openChangelog = openChangelog;
+        window.closeChangelog = closeChangelog;
+        
+        // Tour exports
+        window.startTour = startTour;
+        window.endTour = endTour;
+        window.nextTourStep = nextTourStep;
+        window.prevTourStep = prevTourStep;
 
         // Init
         window.addEventListener('DOMContentLoaded', () => {
             parseAllData();
             renderQuickFilterChips();
-            filterArticles();
             loadNotepad();
+            
+            const loaded = loadAppState();
+            if (!loaded) {
+                filterArticles();
+            }
+            
+            checkVersionAndShowModal();
+            
+            const viewedVersion = localStorage.getItem('fib_viewed_version');
+            if (viewedVersion === APP_VERSION) {
+                checkTutorial();
+            }
+            
+            // Запуск цикла автосохранения
+            setInterval(saveAppState, 1000);
         });
     </script>
 </body>
