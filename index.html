@@ -288,6 +288,9 @@
                         <i class="fa-solid fa-list-check text-cyan-400"></i>
                         <h2 class="font-bold text-sm uppercase tracking-wider text-slate-200">АКТИВНОЕ ДОСЬЕ И РАСЧЕТЫ</h2>
                     </div>
+                    <button id="copyDossierBtn" onclick="copyDossierArticles()" class="hidden bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-slate-700 text-slate-300 text-[11px] font-mono px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 transition-all active:scale-95 hover:scale-[1.02]">
+                        <i class="fa-regular fa-copy text-cyan-400"></i> СКОПИРОВАТЬ СТАТЬИ
+                    </button>
                 </div>
 
                 <div class="p-4 flex-grow min-h-[140px] max-h-[220px] overflow-y-auto bg-slate-950/50">
@@ -987,7 +990,7 @@
                     <i class="fa-solid fa-bullhorn text-cyan-400"></i>
                 </div>
                 <div>
-                    <h3 class="font-extrabold text-sm text-slate-100 tracking-wider uppercase font-mono">Список изменений: Версия <span id="changelogVersionText">4.3.0</span></h3>
+                    <h3 class="font-extrabold text-sm text-slate-100 tracking-wider uppercase font-mono">Список изменений: Версия <span id="changelogVersionText">4.4.0</span></h3>
                     <p class="text-[10px] text-slate-400 font-mono">История обновлений и исправлений</p>
                 </div>
             </div>
@@ -1000,40 +1003,20 @@
                     </h4>
                     <ul class="text-xs text-slate-300 space-y-2 pl-4 list-disc leading-relaxed">
                         <li>
-                            <strong class="text-slate-100">Добавлен интерактивный Конвертер Срока.</strong>
-                            <p class="text-slate-400 text-[10px] mt-0.5">Встроенный калькулятор в нижней части экрана автоматически пересчитывает «Звезды/Года» в реальное время заключения («Минуты КПЗ») по официальному тарифу: 1 звезда = 1 год = 10 минут.</p>
+                            <strong class="text-slate-100 font-semibold">Добавлено быстрое копирование выбранных статей.</strong>
+                            <p class="text-slate-400 text-[10px] mt-0.5">В заголовок «Активного Досье» встроена кнопка «Скопировать статьи». При её нажатии все выбранные статьи собираются в один упорядоченный список, автоматически сортируются по возрастанию номеров и форматируются, например: <code class="text-cyan-400">16.15, 17.6 УК, 2.2 АК</code>.</p>
+                        </li>
+                        <li>
+                            <strong class="text-slate-100">Интерактивный Конвертер Срока.</strong>
+                            <p class="text-slate-400 text-[10px] mt-0.5">Встроенный калькулятор автоматически пересчитывает «Звезды/Года» в реальное время заключения («Минуты КПЗ») по официальному тарифу: 1 звезда = 1 год = 10 минут.</p>
                         </li>
                         <li>
                             <strong class="text-slate-100">Авторасчет времени КПЗ в досье.</strong>
-                            <p class="text-slate-400 text-[10px] mt-0.5">При выборе любой уголовной статьи калькулятор досье теперь самостоятельно рассчитывает и выводит общее экранное время ареста в минутах.</p>
-                        </li>
-                        <li>
-                            <strong class="text-slate-100">Оптимизация интерфейса.</strong>
-                            <p class="text-slate-400 text-[10px] mt-0.5">Сетка нижнего блока перестроена на 3 колонки (BOLO, Блокнот и Конвертер) для удобной работы на любых типах устройств.</p>
+                            <p class="text-slate-400 text-[10px] mt-0.5">При выборе любой уголовной статьи калькулятор досье самостоятельно рассчитывает и выводит общее экранное время ареста в минутах.</p>
                         </li>
                         <li>
                             <strong class="text-slate-100">Исправлен подсчёт залога.</strong>
                             <p class="text-slate-400 text-[10px] mt-0.5">Добавлен лимит на максимальный залог в сумме 125 тысяч а также запрет на выход под залог при 4 и более звёздах.</p>
-                        </li>
-                        <li>
-                            <strong class="text-slate-100">Добавлены анимации при открытии/закрытии модального окна и при переключении вкладок.</strong>
-                            <p class="text-slate-400 text-[10px] mt-0.5">Плавные эффекты увеличения и затухания для более приятного пользовательского опыта.</p>
-                        </li>
-                        <li>
-                            <strong class="text-slate-100">Реализован интерактивный анализатор законности задержания.</strong>
-                            <p class="text-slate-400 text-[10px] mt-0.5">Пользователи могут отмечать основания для задержания и получать мгновенную обратную связь о легитимности своих действий.</p>
-                        </li>
-                        <li>
-                            <strong class="text-slate-100">Добавлены новые иконки и улучшены визуальные элементы.</strong>
-                            <p class="text-slate-400 text-[10px] mt-0.5">Использование FontAwesome для более выразительной иконографии и улучшение читаемости информации.</p>
-                        </li>
-                        <li>
-                            <strong class="text-slate-100">Исправлен подсчёт залога.</strong>
-                            <p class="text-slate-400 text-[10px] mt-0.5">Добавлен лимит на максимальный залог в сумме 125 тысяч а также запрет на выход под залог при 4 и более звёздах.</p>
-                        </li>
-                        <li>
-                            <strong class="text-slate-100">Убран туториал.</strong>
-                            <p class="text-slate-400 text-[10px] mt-0.5">Туториал был удален для упрощения интерфейса и улучшения пользовательского опыта.</p>
                         </li>
                     </ul>
                 </div>
@@ -1299,7 +1282,7 @@
         let currentCodeType = "UK";
         let bolos = [];
 
-        const APP_VERSION = "4.3.0";
+        const APP_VERSION = "4.4.1";
 
         // Parsing raw text into structures
         function parseAllData() {
@@ -1491,6 +1474,7 @@
             const emptyState = document.getElementById('emptyChargesState');
             const selectedListContainer = document.getElementById('selectedChargesList');
             const calcCard = document.getElementById('calculatorCard');
+            const copyBtn = document.getElementById('copyDossierBtn');
             
             calcCard.classList.remove('glow-red');
             calcCard.classList.add('glow-cyan');
@@ -1501,6 +1485,7 @@
             if (selectedArticles.length === 0) {
                 emptyState.classList.remove('hidden');
                 selectedListContainer.classList.add('hidden');
+                if (copyBtn) copyBtn.classList.add('hidden');
                 
                 document.getElementById('starsCountText').textContent = "Штраф";
                 document.getElementById('starsStarsContainer').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i>`;
@@ -1520,6 +1505,7 @@
             emptyState.classList.add('hidden');
             selectedListContainer.classList.remove('hidden');
             selectedListContainer.innerHTML = "";
+            if (copyBtn) copyBtn.classList.remove('hidden');
 
             let totalStars = 0, totalFine = 0, totalJail = 0;
             let specDirectives = [];
@@ -1636,6 +1622,56 @@
                 `;
             } else {
                 dirBox.classList.add('hidden');
+            }
+        }
+
+        // Helper to extract a sortable decimal number from the article name (e.g. "16.15" -> 16.15, "6.1 ч.1" -> 6.1)
+        function parseArticleNumber(str) {
+            const match = str.match(/(\d+(\.\d+)?)/);
+            return match ? parseFloat(match[1]) : 999;
+        }
+
+        // Helper to construct a formatted sorted string of articles
+        function getFormattedArticlesText() {
+            if (selectedArticles.length === 0) return "";
+            
+            // Group selected articles by their code type (converting 'КоАП' to 'АК')
+            const groups = {};
+            selectedArticles.forEach(item => {
+                let typeKey = item.type;
+                if (typeKey === 'КоАП') typeKey = 'АК';
+                if (!groups[typeKey]) groups[typeKey] = [];
+                groups[typeKey].push(item);
+            });
+
+            const formattedGroups = [];
+            // Preferred order of display: УК, АК, ДК, ПК, ЭК
+            const typeOrder = ['УК', 'АК', 'ДК', 'ПК', 'ЭК'];
+            const allTypes = Array.from(new Set([...typeOrder, ...Object.keys(groups)]));
+            
+            allTypes.forEach(type => {
+                if (groups[type] && groups[type].length > 0) {
+                    // Sort items in this group numerically
+                    groups[type].sort((a, b) => {
+                        return parseArticleNumber(a.article) - parseArticleNumber(b.article);
+                    });
+                    
+                    const articleLabels = groups[type].map(item => {
+                        return item.article.replace('Статья ', '');
+                    });
+                    
+                    formattedGroups.push(`${articleLabels.join(', ')} ${type}`);
+                }
+            });
+            
+            return formattedGroups.join(', ');
+        }
+
+        // Action when pressing "Copy Articles" button
+        function copyDossierArticles() {
+            const textToCopy = getFormattedArticlesText();
+            if (textToCopy) {
+                copyRawText(textToCopy, 'copyDossierBtn');
             }
         }
 
@@ -2118,6 +2154,7 @@
         window.convertTime = convertTime;
         window.openChangelog = openChangelog;
         window.closeChangelog = closeChangelog;
+        window.copyDossierArticles = copyDossierArticles;
 
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('changelogVersionText').textContent = APP_VERSION;
